@@ -179,8 +179,19 @@ python train.py --root_dir /home/projects/imseg_sar/ \
 
 * **Patchify Half Resolution with Class Balance Weight (PHR-CBW)**:
 
-Double Class Balance + Ignore Boundary Layer .............
-write something about it .......
+### Resolving Data Imbalance Issues
+
+To address data imbalance problems, one can utilize the following method:
+
+If encountering a scenario where there are only two classes, with the first class representing 60% of the dataset and the second class comprising 40%, the imbalance can be rectified by setting `--weights= True` and specifying `--balance_weights = [4,6]`.
+```
+python train.py --weights True --balance_weights [4,6]
+```
+
+However, in cases where there are three classes, and one of them is considered a boundary that should be disregarded, the weight of the corresponding class must be set to 0. For instance, in the command line, this would be denoted as `--balance_weights = [4,6,0]`.
+```
+python train.py --weights True --balance_weights [4,6,0]
+```
 
 ```
 python train.py --root_dir YOUR_ROOT_DIR \
