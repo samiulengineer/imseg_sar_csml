@@ -41,7 +41,7 @@ Our current pipeline supports semantic segmentation for both binary and multi-cl
 First clone the github repo in your local or server machine by following:
 
 ```
-git clone https://github.com/samiulengineer/road_segmentation.git
+git clone https://github.com/samiulengineer/imseg_sar_csml.git
 ```
 
 Change the working directory to project root directory. Use Conda/Pip to create a new environment and install dependency from `requirement.txt` file. The following command will install the packages according to the configuration file `requirement.txt`.
@@ -50,18 +50,14 @@ Change the working directory to project root directory. Use Conda/Pip to create 
 pip install -r requirements.txt
 ```
 
-Keep the above mention dataset in the data folder that give you following structure. Please do not change the directory name `image` and `gt_image`.
+Keep the above mention dataset in the data folder that give you following structure.
 
 ```
---data
-    --image
-        --um_000000.png
-        --um_000001.png
-            ..
-    --gt_image
-        --um_road_000000.png
-        --um_road_000002.png
-            ..
+   data
+      file_01_chip0_vv.tif
+      file_01_chip0_vh.tif
+      file_01_chip0_nasadem.tif
+      file_01_chip0.tif
 ```
 
 ## **Experiment**
@@ -339,7 +335,6 @@ python project/test.py \
     --evaluation True \
 ```
 
-## **Handling Multiple Dataset**
 
 
 
