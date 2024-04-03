@@ -63,7 +63,8 @@ Keep the above mention dataset in the data folder that give you following struct
 ## **Experiment**
 
 * ### **Comprehensive Full Resolution (CFR)**:
-This experiment utilize the dataset as it is. The image size must follow $2^n$ format like, $256*256$, $512*512$ etc. If we choose $300*300$, which is not $2^n$ format, this experiment will not work.
+This experiment utilizes the dataset as it is. The image size must follow $2^n$ format, such as $256 \times 256$, $512 \times 512$, etc. If we choose $300 \times 300$, which is not in $2^n$ format, this experiment will not work.
+
 
 ```
 python train.py --root_dir YOUR_ROOT_DIR \
