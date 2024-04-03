@@ -5,15 +5,12 @@ from pathlib import Path
 
 # Image Input/Output
 # ----------------------------------------------------------------------------------------------
-channel_type = ["vv","vh","nasadem"]
+channel_type = ["vv","vh","nasadem"] # we need to pass number of channels as list
 in_channels = len(channel_type)
 num_classes = 2
 height = 400 # for PHR-CB experiment patch size = height = width
 width = 400
-# # only height and width
-# initial_height = 5000 # before patch
-# initial_width = 5000 # before patch
-rename = False
+rename = False # True if need to rename our files name to be compatible with our pipeline otherwise False
 
 # Image Tiles
 # ----------------------------------------------------------------------------------------------
