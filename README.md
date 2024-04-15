@@ -346,10 +346,10 @@ This pipeline requires the dataset name to be in a specific format in order to c
 
 
 ## **Plot During Validation**
-During the training process, validation will occur at specific epochs, which can be configured within the `config.py` module. Within `config.py`, there exists a variable named `val_plot_epoch`. If its value is set to 3, validation will be conducted after every 3 epochs. The resulting validation plots will be saved in the following folder.
+During the training process, validation will occur at specific epochs, which can be configured within the `config.py` variable named `val_plot_epoch`. If its value is set to 3, validation will be conducted after every 3 epochs. The resulting validation plots will be saved in the following folder.
 
 ```
-root/logs/prediction/model_name/validation/experiment
+root/logs/prediction/{model_name}/validation/experiment
 ```
 
 
