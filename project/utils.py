@@ -17,8 +17,6 @@ from progressbar import ProgressBar
 import moviepy.video.io.ImageSequenceClip
 
 from dataset import read_img, transform_data
-# from tensorflow.keras.callbacks import TensorBoard
-# class AnnotationCallback(keras.callbacks.Callback):
 
 
 
@@ -67,8 +65,8 @@ class SelectCallbacks(keras.callbacks.Callback):
             save predict mask
         """
         if (epoch % self.config.val_plot_epoch == 0):  # every after certain epochs the model will predict mask
-            # save image/images with their mask, pred_mask and accuracy
-            val_show_predictions(self.val_dataset, self.model)
+            
+            val_show_predictions(self.val_dataset, self.model)  # save image/images with their mask, pred_mask and accuracy
         print("...............................................................")
         print(self.config.checkpoint_name)
         print("...............................................................")
@@ -260,16 +258,6 @@ def test_eval_show_predictions(dataset, model):
         score = m.result().numpy()
         total_score += score
 
-        # # plot and saving image
-        # if evaluation:         
-        #     # use this function only to save predicted image
-        #     display_label(pred_full_label, test_dir["feature_ids"][i], prediction_eval_dir)
-        # else:
-        #     display({"image": feature_img,      # change in the key "image" will have to change in the display
-        #             "Mask": np.argmax([mask],
-        #             axis=3)[0],
-        #             "Prediction (miou_{:.4f})".format(score): pred_full_label},
-        #             i, prediction_test_dir, score, experiment)
             
 
         display({"VV": feature_img[:,:,0],      # change in the key "image" will have to change in the display
@@ -299,26 +287,21 @@ def val_show_predictions(dataset, model):
     df = pd.DataFrame.from_dict(patch_valid_dir)  # read as panadas dataframe
     val_dir = pd.read_csv(valid_dir)  # get the csv file
 
-    #we will implement {if i==-1, then random selection of i otherwise i value from config}
-    # print(random.randint(0, len(val_dir-1)))
+
     if index == -1:
         i = random.randint(0, (len(val_dir)-1))
     else:
         i = index
-    # loop to traverse full dataset
-    # print(f"index_{i}")
+
     mask_s = transform_data(
             read_img(val_dir["masks"][i], label=True), num_classes)
     mask_size = np.shape(mask_s)              
-        # for same mask directory get the index
     
-    #problems
     #checking mask from both csv and json file and taking indices from the json file
     idx = df[df["masks"] == val_dir["masks"][i]].index
 
     # construct a single full image from prediction patch images
     pred_full_label = np.zeros((mask_size[0], mask_size[1]), dtype=int)
-    #problems
     for j in idx:
         p_idx = patch_valid_dir["patch_idx"][j]
         feature, mask, indexNum = dataset.get_random_data(j)
@@ -389,42 +372,7 @@ def frame_to_video(fname, fps=30):
     clip = moviepy.video.io.ImageSequenceClip.ImageSequenceClip(image_files, fps=fps)
     clip.write_videofile(fname)
 
-# Renaming files for preparation of csv
-# ----------------------------------------------------------------------------------------------
-def rename_files(datapath):
-    # List all files in the directory
-    files = os.listdir(datapath)
-    
-    for filename in files:
-        # Extract the file extension
-        _, ext = os.path.splitext(filename)
-        
-        # Check if the filename starts with DEM_ab.tif
-        if filename.startswith("DEM_"):
-            new_filename = filename.replace("DEM_", "").replace(".tif", "_nasadem.tif")
-        
-        # Check if the filename starts with VV_ab.tif
-        elif filename.startswith("VV_"):
-            new_filename = filename.replace("VV_", "").replace(".tif", "_vv.tif")
-        
-        # Check if the filename starts with VH_ab.tif
-        elif filename.startswith("VH_"):
-            new_filename = filename.replace("VH_", "").replace(".tif", "_vh.tif")
-        
-        # Check if the filename starts with GT_ab.tif
-        elif filename.startswith("GT_"):
-            new_filename = filename.replace("GT_", "")
-        
-        else:
-            # If none of the conditions are met, skip this file
-            raise ValueError("files_name_mismatch")
-        
-        # Construct the new filepath
-        new_filepath = os.path.join(datapath, new_filename)
-        
-        # Rename the file
-        os.rename(os.path.join(datapath, filename), new_filepath)
-        print(f"Renamed {filename} to {new_filename}")
+
         
         
 

@@ -16,7 +16,7 @@ from tensorflow.keras.utils import to_categorical, Sequence
 # from utils import video_to_frame
 matplotlib.use("Agg")
 
-#only for SAR
+#only for SAR. this dict contains mean and std of different signal of SAR image which is used to normalize the input features
 label_norm =   {'vv':["_vv.tif", -12.204613877277495, 4.0422273221629785],
                 'vh':["_vh.tif",-18.96970667660666, 4.367189151420688],
                 'nasadem':["_nasadem.tif",812.64422736, 425.41858324129265],
@@ -40,51 +40,6 @@ def transform_data(label, num_classes):
     # return the label as one hot encoded
     return to_categorical(label, num_classes)
 
-
-#this read_img for rgb
-# def read_img(
-#     directory, in_channels=None, label=False, patch_idx=None, height=256, width=256
-# ):
-#     """
-#     Summary:
-#         read image with rasterio and normalize the feature
-#     Arguments:
-#         directory (str): image path to read
-#         in_channels (bool): number of channels to read
-#         label (bool): TRUE if the given directory is mask directory otherwise False
-#         patch_idx (list): patch indices to read
-#     Return:
-#         numpy.array
-#     """
-
-#     # for musk images
-#     if label:
-#         mask = cv2.imread(directory)
-#         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-
-#         mask[mask < 105] = 0
-#         mask[mask > 104] = 1
-
-#         if patch_idx:
-#             # extract patch from original mask
-#             return mask[patch_idx[0] : patch_idx[1], patch_idx[2] : patch_idx[3]]
-
-#         # commented out by manik (as patch_idx is false, it's CFR or CFR_CB, so it's deprecated)
-#         else:
-#             return mask  # np.expand_dims(mask, axis=2)
-
-#     # for features images
-#     else:
-#         # read N number of channels
-#         X = cv2.imread(directory)
-
-#         if patch_idx:
-#             # extract patch from original features
-#             return X[patch_idx[0] : patch_idx[1], patch_idx[2] : patch_idx[3], :]
-
-#         # commented out by manik (as patch_idx is false, it's CFR or CFR_CB, so it's deprecated)
-#         else:
-#             return X
 
 #this read_img for SAR data
 def read_img(directory, in_channels=config.in_channels, label=False, patch_idx=None, height=None, width=None):
@@ -198,42 +153,6 @@ def video_to_frame():
         success, image = vidcap.read()
         count += 1
 
-
-# def data_csv_gen():
-#     """
-#     Summary:
-#         spliting data into train, test, valid
-#     Arguments:
-#         empty
-#     Return:
-#         save file
-#     """
-#     images = []
-#     masks = []
-
-#     image_path = dataset_dir / "image"
-#     mask_path = dataset_dir / "gt_image"
-#     image_names = os.listdir(image_path)
-#     image_names = sorted(image_names)
-#     mask_names = os.listdir(mask_path)
-#     mask_names = sorted(mask_names)
-
-#     for i in image_names:
-#         images.append(image_path / i)
-#     for i in mask_names:
-#         masks.append(mask_path / i)
-
-#     x_train, y_train, x_valid, y_valid, x_test, y_test = data_split(images, masks)
-
-#     # creating dictionary for train, test and validation
-#     train = {"feature_ids": x_train, "masks": y_train}
-#     valid = {"feature_ids": x_valid, "masks": y_valid}
-#     test = {"feature_ids": x_test, "masks": y_test}
-
-#     # saving dictionary as csv files
-#     save_csv(train, "train.csv")
-#     save_csv(valid, "valid.csv")
-#     save_csv(test, "test.csv")
         
 def data_csv_gen():
     """
@@ -259,8 +178,8 @@ def data_csv_gen():
         else:
             masks.append(filename)
 
-    new_images = [f"{data_path}/{image_name}" for image_name in images]
-    new_masks = [f"{data_path}/{image_name}" for image_name in masks]
+    new_images = [f"{data_path}/{image_name}" for image_name in images] # getting full image path
+    new_masks = [f"{data_path}/{image_name}" for image_name in masks]   # getting full mask path
 
     x_train, y_train, x_valid, y_valid, x_test, y_test = data_split(new_images, new_masks)
 
@@ -275,44 +194,11 @@ def data_csv_gen():
     save_csv(test, "test.csv")
 
 
-# def eval_csv_gen():
-#     """
-#     Summary:
-#         for evaluation generate frame from video if video path is given and create csv file from testing folder
-#     Arguments:
-#         empty
-#     Return:
-#         csv file
-#     """
-
-#     data_path = dataset_dir
-#     images = []
-
-#     # video is provided then it will generate frame from video
-#     # if video_path != "None":
-#     #     video_to_frame()
-#     #     image_path = dataset_dir / "video_frame"
-
-#     # else:
-#     #     image_path = data_path
-#     image_path = data_path
-
-#     image_names = os.listdir(image_path)
-#     image_names = sorted(image_names)
-
-#     for i in image_names:
-#         images.append(image_path / i)
-
-#     # creating dictionary for train, test and validation
-#     eval = {"feature_ids": images, "masks": images}
-
-#     # saving dictionary as csv files
-#     save_csv(eval, "eval.csv")
 
 def eval_csv_gen():
     """
     Summary:
-        for evaluation generate frame from video if video path is given and create csv file from testing folder
+        for evaluation generate eval.csv from evaluation data
     Arguments:
         empty
     Return:
@@ -333,8 +219,8 @@ def eval_csv_gen():
         else:
             masks.append(filename)
 
-    new_images = [f"{data_path}/{image_name}" for image_name in images]
-    new_masks = [f"{data_path}/{image_name}" for image_name in masks]
+    new_images = [f"{data_path}/{image_name}" for image_name in images]  # getting full image path
+    new_masks = [f"{data_path}/{image_name}" for image_name in masks]    # getting full mask path
     # creating dictionary for train, test and validation
     eval = {"feature_ids": new_images, "masks": new_masks}
     # saving dictionary as csv files
@@ -351,7 +237,7 @@ def class_percentage_check(label):
         dict object holding percentage of each class
     """
     # calculating total pixels
-    total_pix = label.shape[0] * label.shape[0]
+    total_pix = label.shape[0] * label.shape[1]
     # get the total number of pixel labeled as 1
     class_one = np.sum(label)
     # get the total number of pixel labeled as 0
@@ -363,7 +249,7 @@ def class_percentage_check(label):
     }
 
 
-def save_patch_idx(path, patch_size=256, stride=8, test=None, patch_class_balance=None):
+def save_patch_idx(path, patch_size=patch_size, stride=stride, test=None, patch_class_balance=None):
     """
     Summary:
         finding patch image indices for single image based on class percentage. work like convolutional layer
@@ -374,20 +260,10 @@ def save_patch_idx(path, patch_size=256, stride=8, test=None, patch_class_balanc
     Return:
         list holding all the patch image indices for a image
     """
-    # read the image for rgb
-    # img = cv2.imread(path)
-    # img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    # img[img < 105] = 0
-    # img[img > 104] = 1
-    # img = np.where((img<105) | (img>105), 0, 1)
-
-    #read img for sar
-    # print("pathname")
-    # print(path)
     with rasterio.open(path) as t:  # opening the image directory 
         img = t.read(1)
-        img[img == 255] = 0 # convert unlabeled to non-water/backgroun
+        img[img == 2] = 0 # convert unlabeled to non-water/backgroun
 
     # calculating number of patches for given image
     # total patch images = patch_height * patch_weight
@@ -492,7 +368,7 @@ def patch_images(data, name):
     # dictionary for patch images
     temp = {"feature_ids": img_dirs, "masks": masks_dirs, "patch_idx": all_patch}
 
-    # save data
+    # save data to json
     write_json((root_dir / "data/json/"), (name + str(patch_size)+"_" + str(stride) + ".json"), temp)
 
 
@@ -503,7 +379,7 @@ class Augment:
         super().__init__()
         """
         Summary:
-            initialize class variables
+            Apply data augmentation to input features and their corresponding masks
         Arguments:
             batch_size (int): how many data to pass in a single step
             ratio (float): percentage of augment data in a single batch
@@ -549,7 +425,7 @@ class Augment:
                 )
                 mask = read_img(label_dir[i], label=True, patch_idx=patch_idx[i])
 
-            # commented out by manik (as patch_idx is false, it's CFR or CFR_CB, so it's deprecated)
+            
             else:
                 # get the image and mask
                 img = read_img(feature_dir[i], in_channels=self.channels)
@@ -582,7 +458,7 @@ class MyDataset(Sequence):
     ):
         """
         Summary:
-            initialize class variables
+            MyDataset class to create dataloader object
         Arguments:
             img_dir (list): all image directory
             tgt_dir (list): all mask/ label directory
@@ -664,7 +540,6 @@ class MyDataset(Sequence):
                         read_img(batch_y[i], label=True, patch_idx=batch_patch[i])
                     )
 
-            # commented out by manik (as patchify is false, it's CFR or CFR_CB, so it's deprecated)
             else:
                 imgs.append(read_img(batch_x[i], in_channels=self.in_channels))
                 # transform mask for model (categorically)
@@ -687,7 +562,6 @@ class MyDataset(Sequence):
                 )  # augment patch images and mask randomly
                 imgs = imgs + aug_imgs  # adding augmented images
 
-            # commented out by manik (as patchify is false it's CFR or CFR_CB, so it's deprecated)
             else:
                 aug_imgs, aug_masks = self.augment.call(
                     self.img_dir, self.tgt_dir
@@ -706,8 +580,6 @@ class MyDataset(Sequence):
         tgts = np.array(tgts)
         imgs = np.array(imgs)
 
-        # commented out by manik (as self.weights != None it's CFR_CB, so it's deprecated)
-        # return weighted features and lables
         if self.weights != None:
             # creating a constant tensor
             class_weights = tf.constant(self.weights)
@@ -763,7 +635,6 @@ class MyDataset(Sequence):
                     )
                 )
 
-        # commented out by manik (as patchify is false it's CFR or CFR_CB, so it's deprecated)
         else:
             imgs.append(read_img(self.img_dir[idx], in_channels=self.in_channels))
 
@@ -798,23 +669,21 @@ def get_train_val_dataloader():
     if not (os.path.exists(p_train_dir)) and patchify:
         print("Saving patchify indices for train and test.....")
 
-        # for training
+        # read train csv
         data = pd.read_csv(train_dir)
 
         if patch_class_balance:
             patch_images(data, "train_patch_phr_cb_")
 
-        # commented out by manik (as patch_class_balance is false and patchify is True, it's PHR, so it's deprecated)
         else:
             patch_images(data, "train_patch_phr_")
 
-        # for validation
+        # read valid csv
         data = pd.read_csv(config.valid_dir)
 
         if patch_class_balance:
             patch_images(data, "valid_patch_phr_cb_")
 
-        # commented out by manik (as patch_class_balance is false and patchify is True, it's PHR, so it's deprecated)
         else:
             patch_images(data, "valid_patch_phr_")
 
@@ -834,7 +703,6 @@ def get_train_val_dataloader():
         train_idx = train_dir["patch_idx"]
         valid_idx = valid_dir["patch_idx"]
 
-    # commented out by manik (as patchify is false, it's CFR or CFR_CB, so it's deprecated)
     # initializing train, test and validatinn for images
     else:
         print("Loading features and masks directories.....")
@@ -855,7 +723,7 @@ def get_train_val_dataloader():
     print("---------------------------------------------------")
     
 
-    # create Augment object if augment is true
+    # create Augment object if augment is true and batch_size is greater than 1
     if augment and batch_size > 1:
         augment_obj = Augment(batch_size, in_channels)
         # new batch size after augment data for train
@@ -864,10 +732,7 @@ def get_train_val_dataloader():
         n_batch_size = batch_size
         augment_obj = None
 
-    # commented out by manik (as weights is true, it's CFR_CB, so it's deprecated) but we need to pass weight as None
-    # new statement by manik
-    # weights = None
-    # get the class weight if weights is true
+
     if weights:
         weights = tf.constant(balance_weights)
     else:

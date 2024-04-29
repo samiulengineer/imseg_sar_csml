@@ -14,10 +14,23 @@ Throughout the pipeline, emphasis is placed on modularity, allowing for easy int
 
 ## **Dataset**
 
-Different type of dataset ...............
-1. ....
-2. ....
-3. ....
+## Input Data Organization Guidelines
+
+To ensure proper organization of input features, adhere to the following guidelines:
+
+1. **Separate Files for Different Input Channels**: Each channel of input feature should be stored in separate files.
+
+2. **Unique Filename for Each Channel**: Ensure that filenames are unique for all channels, except for the last portion of the filename.
+
+3. **Example Naming Convention**:
+   - For instance, if the name of the VV channel is `rice_01_vv.tif`, then the corresponding VH and DEM files should be named as follows:
+     - VH: `rice_01_vh.tif`
+     - DEM: `rice_01_nasadem.tif`
+   - The mask filename should retain the first unique portion, such as `rice_01.tif` in the example provided.
+
+4. **Key Consideration**:
+   - The first part of the filename for all channels should be unique, while the last part should vary to denote different channels. But the mask name should be the first unique portion of the name.
+
 
 ## **Model**
 
@@ -28,7 +41,7 @@ Our current pipeline supports semantic segmentation for both binary and multi-cl
 First clone the github repo in your local or server machine by following:
 
 ```
-git clone https://github.com/samiulengineer/road_segmentation.git
+git clone https://github.com/samiulengineer/imseg_sar_csml.git
 ```
 
 Change the working directory to project root directory. Use Conda/Pip to create a new environment and install dependency from `requirement.txt` file. The following command will install the packages according to the configuration file `requirement.txt`.
@@ -37,36 +50,36 @@ Change the working directory to project root directory. Use Conda/Pip to create 
 pip install -r requirements.txt
 ```
 
-Keep the above mention dataset in the data folder that give you following structure. Please do not change the directory name `image` and `gt_image`.
+Keep the above mention dataset in the data folder that give you following structure.
 
 ```
---data
-    --image
-        --um_000000.png
-        --um_000001.png
-            ..
-    --gt_image
-        --um_road_000000.png
-        --um_road_000002.png
-            ..
+   data
+      file_01_chip0_vv.tif
+      file_01_chip0_vh.tif
+      file_01_chip0_nasadem.tif
+      file_01_chip0.tif
 ```
 
 ## **Experiment**
 
 * ### **Comprehensive Full Resolution (CFR)**:
-This experiment utilize the dataset as it is. The image size must follow $2^n$ format like, $256*256$, $512*512$ etc. If we choose $300*300$, which is not $2^n$ format, this experiment will not work.
+This experiment utilizes the dataset as it is. The image size must follow $2^n$ format, such as $256 \times 256$, $512 \times 512$, etc. If we choose $300 \times 300$, which is not in $2^n$ format, this experiment will not work.
+
 
 ```
 python train.py --root_dir YOUR_ROOT_DIR \
-    --dataset_dir YOUR_ROOT_DIR/data/ \
     --model_name unet \
     --epochs 10 \
     --batch_size 3 \
-    --index -1 \
-    --experiment cfr \
-    --weights False \
-    --patchify False \
-    --patch_class_balance False
+    --experiment cfr 
+```
+##### Example:
+```
+python train.py --root_dir /home/projects/imseg_sar/ \
+    --model_name unet \
+    --epochs 10 \
+    --batch_size 3 \
+    --experiment cfr 
 ```
 
 * ### **Comprehensive Full Resolution with Class Balance (CFR-CB)**:
@@ -74,16 +87,19 @@ We balance the dataset biasness towards non-water class in this experiment.
 
 ```
 python train.py --root_dir YOUR_ROOT_DIR \
-    --dataset_dir YOUR_ROOT_DIR/data/ \
     --model_name unet \
     --epochs 10 \
     --batch_size 3 \
-    --index -1 \
     --experiment cfr_cb \
-    --weights True \
-    --balance_weights = include this in argparse \
-    --patchify False \
-    --patch_class_balance False
+```
+##### Example:
+
+```
+python train.py --root_dir /home/projects/imseg_sar/ \
+    --model_name unet \
+    --epochs 10 \
+    --batch_size 3 \
+    --experiment cfr_cb 
 ```
 
 * ### **Patchify Half Resolution (PHR)**:
@@ -91,15 +107,18 @@ In this experiment we take all the patch images for each chip. Data preprocessin
 
 ```
 python train.py --root_dir YOUR_ROOT_DIR \
-    --dataset_dir YOUR_ROOT_DIR/data/ \
     --model_name unet \
     --epochs 10 \
     --batch_size 3 \
-    --index -1 \
     --experiment phr \
-    --weights False \
-    --patchify False \
-    --patch_class_balance False
+```
+##### Example:
+```
+python train.py --root_dir /home/projects/imseg_sar/ \
+    --model_name unet \
+    --epochs 10 \
+    --batch_size 3 \
+    --experiment phr 
 ```
 
 * ### **Patchify Half Resolution with Class Balance (PHR-CB)**:
@@ -107,34 +126,46 @@ In this experiment we take a threshold value (19%) of water class and remove the
 
 ```
 python train.py --root_dir YOUR_ROOT_DIR \
-    --dataset_dir YOUR_ROOT_DIR/data/ \
     --model_name unet \
     --epochs 10 \
     --batch_size 3 \
-    --index -1 \
-    --experiment phr_cb \
-    --weights False \
-    --patchify True \
-    --patch_class_balance False \
+    --experiment phr_cb 
+```
+##### Example:
+```
+python train.py --root_dir /home/projects/imseg_sar/ \
+    --model_name unet \
+    --epochs 10 \
+    --batch_size 3 \
+    --experiment phr_cb 
 ```
 
 * **Patchify Half Resolution with Class Balance Weight (PHR-CBW)**:
 
-Double Class Balance + Ignore Boundary Layer .............
-write something about it .......
+### Resolving Data Imbalance Issues
+
+To address data imbalance problems, one can utilize the following method:
+
+If encountering a scenario where there are only two classes, with the first class representing 60% of the dataset and the second class comprising 40%, the imbalance can be rectified by setting `weights= True` and specifying `balance_weights = [4,6]` in the config.py file.
+
+
+However, in cases where there are three classes, and one of them is considered a boundary that should be disregarded, the weight of the corresponding class must be set to 0. For instance, in the command line, this would be denoted as `balance_weights = [4,6,0]` in the config.py file.
+
 
 ```
 python train.py --root_dir YOUR_ROOT_DIR \
-    --dataset_dir YOUR_ROOT_DIR/data/ \
     --model_name unet \
     --epochs 10 \
     --batch_size 3 \
-    --index -1 \
+    --experiment phr_cb 
+```
+##### Example:
+```
+python train.py --root_dir /home/projects/imseg_sar/ \
+    --model_name unet \
+    --epochs 10 \
+    --batch_size 3 \
     --experiment phr_cb \
-    --weights True \
-    --balance_weights = include this in argparse \
-    --patchify False \
-    --patch_class_balance False \
 ```
 
 ## Transfer Learning, Fine-tuning, and Training from Scratch
@@ -166,10 +197,15 @@ python test.py \
     --dataset_dir YOUR_ROOT_DIR/data/ \
     --model_name unet \
     --load_model_name MODEL_CHECKPOINT_NAME \
-    --index -1 \
-    --patchify False \
-    --patch_size 512 \
-    --experiment cfr \
+    --experiment cfr 
+```
+##### Example:
+```
+python test.py \
+    --dataset_dir /home/projects/imseg_sar/data/ \
+    --model_name unet \
+    --load_model_name my_model.hdf5 \
+    --experiment cfr 
 ```
 
 * ### **PHR and PHR-CB Experiment**
@@ -179,10 +215,15 @@ python test.py \
     --dataset_dir YOUR_ROOT_DIR/data/ \
     --model_name unet \
     --load_model_name my_model.hdf5 \
-    --index -1 \
-    --patchify True \
-    --patch_size 256 \
-    --experiment phr \
+    --experiment phr 
+```
+##### Example:
+```
+python test.py \
+    --dataset_dir /home/projects/imseg_sar/data/ \
+    --model_name unet \
+    --load_model_name my_model.hdf5 \
+    --experiment phr 
 ```
 
 ### **Evaluation from Image**
@@ -200,6 +241,16 @@ python project/test.py \
     --gpu YOUR_GPU_NUMBER \
     --evaluation True \
 ```
+##### Example:
+```
+python project/test.py \
+    --dataset_dir /home/projects/imseg_sar/eavl_data/ \
+    --model_name fapnet \
+    --load_model_name my_model.hdf5 \
+    --experiment road_seg \
+    --gpu 0 \
+    --evaluation True \
+```
 
 ### **Evaluation from Video**
 
@@ -214,16 +265,81 @@ python project/test.py \
     --gpu YOUR_GPU_NUMBER \
     --evaluation True \
 ```
+##### Example:
+```
+python project/test.py \
+    --video_path /home/projects/imseg_sar/video \
+    --model_name fapnet \
+    --load_model_name my_model.hdf5 \
+    --experiment road_seg \
+    --gpu 0 \
+    --evaluation True \
+```
 
 
 
+
+## **SAR Rename Function**
+
+This pipeline requires the dataset name to be in a specific format in order to correctly generate CSV files for the training, validation, and testing datasets. The details of the specific file format name are described in the dataset section. Our current `rename_files` function, defined in the `sar_visualization.ipynb` notebook, identifies whether the file name starts with 'VV' or 'VH', or 'DEM' and adapts it to our specific file name format. If the given dataset name is formatted differently other then file name starts with 'VV' or 'VH', or 'DEM', then we need to modify the `rename_files` function to ensure compatibility with the provided datasets.
+
+
+
+## **Plot During Validation**
+During the training process, validation will occur at specific epochs, which can be configured within the `config.py` module. Within `config.py`, there exists a variable named `val_plot_epoch`. If its value is set to 3, validation will be conducted after every 3 epochs. The resulting validation plots will be saved in the following folder.
+
+```
+root/logs/prediction/model_name/validation/experiment
+```
+
+
+## **Plot During Test**
+### Running Test.py for Evaluation
+
+To perform predictions on the test dataset and save plots, execute the following command in the terminal:
+
+```
+python test.py --evaluation False
+```
+
+This command will generate predictions on the test dataset and store plots in the following directory:
+
+```
+root_dir/logs/prediction/model_name/test/experiment
+```
+## **Plot During Evaluation**
+
+To initiate evaluation on the test.py script, execute the following command in the terminal:
+
+```
+test.py --evaluation True
+```
+
+Upon execution, predictions will be generated using the evaluation dataset, and the resulting plots will be saved in the designated folder structure:
+
+```
+root_dir/logs/prediction/model_name/eval/experiment
+```
+
+
+## **Input Channel Selection**
+In our `config.py` file, there exists a dedicated variable named "channel_type". This variable is designed to accept a list of strings representing specific channel names. For instance: `channel_type = ["vv", "vh", "nasadem"]`. You can include any number of channel names within this list as strings. The will dynamically calculate the total number of channels and perform normalization on a per-channel basis according to the provided channel names.
+
+
+## **Visualization of the Dataset**
+
+To visualize the dataset, we must execute the display_all function as defined in the sar_visualization.ipynb notebook. This function necessitates the CSV file that corresponds to the dataset we intend to visualize, along with a name parameter to establish a folder where the figure's visualization will be stored. For instance, calling 
+```
+display_all(data=train_df, name="train") 
+```
+accomplishes this task.
 
 
 ## **Action tree**
 
 
 ## Training Script: `train.py`
-
+If we run train.py then the the following functions will be executed in the mentioned flow.
 ### Functions
 
 - `create_paths(test=False)` - [utils.py]
@@ -262,8 +378,10 @@ python project/test.py \
   - `get_callbacks()`
 
 ## Test Script: `test.py`
-
 ### Evaluation = False
+
+#### If we run test.py with evaluation = False, then the the following functions will be executed in the mentioned flow.
+
 
 - `create_paths()`
 - `get_test_dataloader()`
@@ -288,6 +406,7 @@ python project/test.py \
 - `get_metrics()`
 
 ### Evaluation = True
+#### If we run test.py with evaluation = True, then the the following functions will be executed in the mentioned flow.
 
 - `create_paths()`
 - `get_test_dataloader()`

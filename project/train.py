@@ -13,7 +13,6 @@ from utils import SelectCallbacks, create_paths, rename_files
 tf.config.optimizer.set_jit("True")
 
 
-# Parsing variable ctrl + /
 # ----------------------------------------------------------------------------------------------
 parser = argparse.ArgumentParser()
 parser.add_argument("--root_dir")
@@ -36,7 +35,7 @@ print(f"root_dir:{root_dir} model_name: {model_name}  epochs:{epochs} \ batch_si
 
 # Set up train configaration
 # ----------------------------------------------------------------------------------------------
-create_paths(test = False)
+create_paths(test = False) #create necessary path
 
 
 # setup gpu
@@ -57,13 +56,11 @@ print("Class Weigth = {}".format(str(weights)))
 print("Experiment = {}".format(str(experiment)))
 print("--------------------------------------------------------\n")
 
-if rename:
-    rename_files(dataset_dir)
+
 
 # Dataset
 # ----------------------------------------------------------------------------------------------
 train_dataset, val_dataset = get_train_val_dataloader()
-# train_dataset_full_image, val_dataset_full_image = get_train_val_dataloader(patchify=False)
 
 
 # Metrics
