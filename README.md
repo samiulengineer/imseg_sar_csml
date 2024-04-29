@@ -31,6 +31,23 @@ To ensure proper organization of input features, adhere to the following guideli
 4. **Key Consideration**:
    - The first part of the filename for all channels should be unique, while the last part should vary to denote different channels. But the mask name should be the first unique portion of the name.
 
+## Input Data Organization Guidelines
+
+To ensure proper organization of input features, adhere to the following guidelines:
+
+1. **Separate Files for Different Input Channels**: Each channel of input feature should be stored in separate files.
+
+2. **Unique Filename for Each Channel**: Ensure that filenames are unique for all channels, except for the last portion of the filename.
+
+3. **Example Naming Convention**:
+   - For instance, if the name of the VV channel is `rice_01_vv.tif`, then the corresponding VH and DEM files should be named as follows:
+     - VH: `rice_01_vh.tif`
+     - DEM: `rice_01_nasadem.tif`
+   - The mask filename should retain the first unique portion, such as `rice_01.tif` in the example provided.
+
+4. **Key Consideration**:
+   - The first part of the filename for all channels should be unique, while the last part should vary to denote different channels. But the mask name should be the first unique portion of the name.
+
 
 ## **Model**
 
@@ -41,6 +58,7 @@ Our current pipeline supports semantic segmentation for both binary and multi-cl
 First clone the github repo in your local or server machine by following:
 
 ```
+git clone https://github.com/samiulengineer/imseg_sar_csml.git
 git clone https://github.com/samiulengineer/imseg_sar_csml.git
 ```
 
@@ -58,11 +76,21 @@ Keep the above mention dataset in the data folder that give you following struct
       file_01_chip0_vh.tif
       file_01_chip0_nasadem.tif
       file_01_chip0.tif
+Keep the above mention dataset in the data folder that give you following structure.
+
+```
+   data
+      file_01_chip0_vv.tif
+      file_01_chip0_vh.tif
+      file_01_chip0_nasadem.tif
+      file_01_chip0.tif
 ```
 
 ## **Experiment**
 
 * ### **Comprehensive Full Resolution (CFR)**:
+This experiment utilizes the dataset as it is. The image size must follow $2^n$ format, such as $256 \times 256$, $512 \times 512$, etc. If we choose $300 \times 300$, which is not in $2^n$ format, this experiment will not work.
+
 This experiment utilizes the dataset as it is. The image size must follow $2^n$ format, such as $256 \times 256$, $512 \times 512$, etc. If we choose $300 \times 300$, which is not in $2^n$ format, this experiment will not work.
 
 
@@ -225,6 +253,22 @@ python test.py \
     --load_model_name my_model.hdf5 \
     --experiment phr 
 ```
+##### Example:
+```
+python test.py \
+    --dataset_dir /home/projects/imseg_sar/data/ \
+    --model_name unet \
+    --load_model_name my_model.hdf5 \
+    --experiment phr 
+```
+##### Example:
+```
+python test.py \
+    --dataset_dir /home/projects/imseg_sar/data/ \
+    --model_name unet \
+    --load_model_name my_model.hdf5 \
+    --experiment phr 
+```
 
 ### **Evaluation from Image**
 
@@ -239,6 +283,16 @@ python project/test.py \
     --load_model_name MODEL_CHECKPOINT_NAME \
     --experiment road_seg \
     --gpu YOUR_GPU_NUMBER \
+    --evaluation True \
+```
+##### Example:
+```
+python project/test.py \
+    --dataset_dir /home/projects/imseg_sar/eavl_data/ \
+    --model_name fapnet \
+    --load_model_name my_model.hdf5 \
+    --experiment road_seg \
+    --gpu 0 \
     --evaluation True \
 ```
 ##### Example:
@@ -340,6 +394,7 @@ accomplishes this task.
 
 ## Training Script: `train.py`
 If we run train.py then the the following functions will be executed in the mentioned flow.
+If we run train.py then the the following functions will be executed in the mentioned flow.
 ### Functions
 
 - `create_paths(test=False)` - [utils.py]
@@ -383,6 +438,9 @@ If we run train.py then the the following functions will be executed in the ment
 #### If we run test.py with evaluation = False, then the the following functions will be executed in the mentioned flow.
 
 
+#### If we run test.py with evaluation = False, then the the following functions will be executed in the mentioned flow.
+
+
 - `create_paths()`
 - `get_test_dataloader()`
   - `data_csv_gen()`
@@ -406,6 +464,7 @@ If we run train.py then the the following functions will be executed in the ment
 - `get_metrics()`
 
 ### Evaluation = True
+#### If we run test.py with evaluation = True, then the the following functions will be executed in the mentioned flow.
 #### If we run test.py with evaluation = True, then the the following functions will be executed in the mentioned flow.
 
 - `create_paths()`

@@ -6,6 +6,7 @@ from pathlib import Path
 # Image Input/Output
 # ----------------------------------------------------------------------------------------------
 channel_type = ["vv","vh","nasadem"] # we need to pass number of channels as list
+channel_type = ["vv","vh","nasadem"] # we need to pass number of channels as list
 in_channels = len(channel_type)
 num_classes = 2
 height = 400 # for PHR-CB experiment patch size = height = width
