@@ -59,7 +59,6 @@ First clone the github repo in your local or server machine by following:
 
 ```
 git clone https://github.com/samiulengineer/imseg_sar_csml.git
-git clone https://github.com/samiulengineer/imseg_sar_csml.git
 ```
 
 Change the working directory to project root directory. Use Conda/Pip to create a new environment and install dependency from `requirement.txt` file. The following command will install the packages according to the configuration file `requirement.txt`.
@@ -76,22 +75,15 @@ Keep the above mention dataset in the data folder that give you following struct
       file_01_chip0_vh.tif
       file_01_chip0_nasadem.tif
       file_01_chip0.tif
-Keep the above mention dataset in the data folder that give you following structure.
+```
 
-```
-   data
-      file_01_chip0_vv.tif
-      file_01_chip0_vh.tif
-      file_01_chip0_nasadem.tif
-      file_01_chip0.tif
-```
 
 ## **Experiment**
 
 * ### **Comprehensive Full Resolution (CFR)**:
 This experiment utilizes the dataset as it is. The image size must follow $2^n$ format, such as $256 \times 256$, $512 \times 512$, etc. If we choose $300 \times 300$, which is not in $2^n$ format, this experiment will not work.
 
-This experiment utilizes the dataset as it is. The image size must follow $2^n$ format, such as $256 \times 256$, $512 \times 512$, etc. If we choose $300 \times 300$, which is not in $2^n$ format, this experiment will not work.
+
 
 
 ```
@@ -253,22 +245,7 @@ python test.py \
     --load_model_name my_model.hdf5 \
     --experiment phr 
 ```
-##### Example:
-```
-python test.py \
-    --dataset_dir /home/projects/imseg_sar/data/ \
-    --model_name unet \
-    --load_model_name my_model.hdf5 \
-    --experiment phr 
-```
-##### Example:
-```
-python test.py \
-    --dataset_dir /home/projects/imseg_sar/data/ \
-    --model_name unet \
-    --load_model_name my_model.hdf5 \
-    --experiment phr 
-```
+
 
 ### **Evaluation from Image**
 
@@ -295,16 +272,7 @@ python project/test.py \
     --gpu 0 \
     --evaluation True \
 ```
-##### Example:
-```
-python project/test.py \
-    --dataset_dir /home/projects/imseg_sar/eavl_data/ \
-    --model_name fapnet \
-    --load_model_name my_model.hdf5 \
-    --experiment road_seg \
-    --gpu 0 \
-    --evaluation True \
-```
+
 
 ### **Evaluation from Video**
 
