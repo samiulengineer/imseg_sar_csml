@@ -7,7 +7,7 @@ from metrics import *
 from tensorflow import keras
 from dataset import get_test_dataloader
 from tensorflow.keras.models import load_model
-from utils import create_paths, test_eval_show_predictions, frame_to_video, rename_files
+from utils import create_paths, test_eval_show_predictions, frame_to_video
 
 # Parsing variable
 # ----------------------------------------------------------------------------------------------

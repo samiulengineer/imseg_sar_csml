@@ -62,7 +62,8 @@ patience = 300 # required for early_stopping, if accuracy does not change for 50
 # ----------------------------------------------------------------------------------------------
 load_model_name = 'fapnet_ex_patchify_WOC_256_epochs_2000_12-Apr-22.hdf5'
 load_model_dir = None #  If None, then by befault root_dir/model/model_name/load_model_name
-evaluation = False # default evaluation value will not work
+evaluation = True # default evaluation value will not work
+video_path = None
 
 # Prediction Plot
 # ----------------------------------------------------------------------------------------------

@@ -509,13 +509,10 @@ If we run train.py then the the following functions will be executed in the ment
   - `get_callbacks()`
 
 ## Test Script: `test.py`
+
 ### Evaluation = False
 
 #### If we run test.py with evaluation = False, then the the following functions will be executed in the mentioned flow.
-
-
-#### If we run test.py with evaluation = False, then the the following functions will be executed in the mentioned flow.
-
 
 - `create_paths()`
 - `get_test_dataloader()`
@@ -539,8 +536,9 @@ If we run train.py then the the following functions will be executed in the ment
   - `display()`
 - `get_metrics()`
 
+
 ### Evaluation = True
-#### If we run test.py with evaluation = True, then the the following functions will be executed in the mentioned flow.
+
 #### If we run test.py with evaluation = True, then the the following functions will be executed in the mentioned flow.
 
 - `create_paths()`
