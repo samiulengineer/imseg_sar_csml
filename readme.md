@@ -74,7 +74,7 @@ Keep the above mention dataset in the data folder that give you following struct
       file_01_chip0_vv.tif # Example Data_1 (Feature Image)
       file_01_chip0_vh.tif # Example Data_2 (Feature Image)
       file_01_chip0_nasadem.tif # Example Data_3 (Feature Image)
-      file_01_chip0.tif # Example Data_1 # Example Data_1 (Ground Truth)
+      file_01_chip0.tif # Example Data_1 # Example Data_4 (Ground Truth)
 ```
 
 
